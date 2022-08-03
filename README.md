@@ -5,28 +5,22 @@ OpenFold non-docker setup
 
 First, you need to install anaconda (miniconda and mamba are fine as well, I'll stick to conda in the following). For a detailed instruction on how to install conda, please refer to their [website](https://docs.anaconda.com/anaconda/install/). In the inference part we furthermore assume that anaconda3 is installed in the home directory.
 
-The following installation steps are also covered in `install.sh` (fast way). For information on how to use this, please refer to it's help (./install.sh -h).
+The following installation steps are also covered in `install.sh` (fast way). For information on how to use this, please refer to it's help (`./install.sh -h`).
 
-### Fast way
+#### Storage size
 
-Clone this repository and execute the installation script.
+Apart from the datasets that need to be downloaded, some memory is needed for the code and the weights. As of August 2022, all alphafold weights have a size of 11GB, all openfold weights have a size of 3.5GB. The code, including aws, needs 383MB.
 
-```shell
-git clone git@github.com:kalininalab/openfold_non_docker.git openfold
-cd openfold
-./install.sh
-```
+TL;DR
+If you want to use
 
-### Slow way
+* openfold only, you need around 4GB of storage
+* alphafold only, you need around 12GB of storage
+* openfold and alphafold, you need around 15GB of storage
 
-We will install everything without sudo rights into a folder called `openfold`:
+### Download databases
 
-```shell
-mkdir openfold
-cd openfold
-```
-
-#### Download databases
+To download all the databases needed for this is crucial for execution of openfold. There are two options to download the databases:
 
 - Option 1: Use our [download_db.sh script](https://github.com/kalininalab/openfold_non_docker/blob/main/download_db.sh) which uses wget, rsync, gunzip and tar instead of aria2c
   Our script maintains the AF2 [download directory structure](https://github.com/deepmind/alphafold#genetic-databases). To download the script, use `wget`:
@@ -48,6 +42,25 @@ cd openfold
   ```
 - Option 2: Follow https://github.com/deepmind/alphafold#genetic-databases
 
+### Installation - Fast way
+
+Clone this repository and execute the installation script.
+
+```shell
+git clone git@github.com:kalininalab/openfold_non_docker.git openfold
+cd openfold
+./install.sh
+```
+
+### Installation - Slow way
+
+We will install everything without sudo rights into a folder called `openfold`:
+
+```shell
+mkdir openfold
+cd openfold
+```
+
 #### Setup Conda Environment
 
 Create a conda environment and install some necessary packages
@@ -61,10 +74,10 @@ pip install -q ml-collections==0.1.0 PyYAML==5.4.1 biopython==1.79
 
 #### Access AWS
 
-This is only needed if you plan to use the retrained OpenFold parameters. This model also works with the original AlphaFold parameters, so this step is optional.
+This is only necessary if you plan to use the retrained OpenFold parameters. This model also works with the original AlphaFold parameters, so this step is optional.
 
 ```shell
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
+curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
 unzip -qq awscliv2.zip
 ./aws/install -i ./aws/ -b ./aws/
 rm awscliv2.zip
