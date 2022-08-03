@@ -101,5 +101,5 @@ if [$of_w]; then
 		af_dir = "$params_dir/of_params"
 	fi
 	mkdir -p "$of_dir"
-	./aws/v2/2.7.20/bin/aws s3 cp --no-sign-request --region us-east-1 "s3://openfold/openfold-params" "$of_dir" --recursive
+	(cd "$of_dir" && ./aws/v2/2.7.20/bin/aws s3 cp --no-sign-request --region us-east-1 "s3://openfold/openfold-params" "$of_dir" --recursive)
 fi
