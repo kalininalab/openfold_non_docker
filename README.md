@@ -5,7 +5,19 @@ OpenFold non-docker setup
 
 First, you need to install anaconda (miniconda and mamba are fine as well, I'll stick to conda in the following). For a detailed instruction on how to install conda, please refer to their [website](https://docs.anaconda.com/anaconda/install/). In the inference part we furthermore assume that anaconda3 is installed in the home directory.
 
-The following steps are also covered in install.sh. For information on how to use this, please refer to it's help (./install.sh -h).
+The following installation steps are also covered in `install.sh` (fast way). For information on how to use this, please refer to it's help (./install.sh -h).
+
+### Fast way
+
+Clone this repository and execute the installation script.
+
+```shell
+git clone git@github.com:kalininalab/openfold_non_docker.git openfold
+cd openfold
+./install.sh
+```
+
+### Slow way
 
 We will install everything without sudo rights into a folder called `openfold`:
 
@@ -14,7 +26,29 @@ mkdir openfold
 cd openfold
 ```
 
-### Setup Conda Environment
+#### Download databases
+
+- Option 1: Use our [download_db.sh script](https://github.com/kalininalab/openfold_non_docker/blob/main/download_db.sh) which uses wget, rsync, gunzip and tar instead of aria2c
+  Our script maintains the AF2 [download directory structure](https://github.com/deepmind/alphafold#genetic-databases). To download the script, use `wget`:
+  
+  ```shell
+  wget https://github.com/kalininalab/openfold_non_docker/blob/main/download_db.sh
+  ```
+  
+  To get information on how to use it, call `download_db.sh -h`.
+
+  To download all databases in full_dbs mode
+  ```shell
+  ./download_db.sh -d </home/johndoe/alphafold_data>
+  ```
+
+  To download the reduced version of the databases in reduced_dbs mode type
+  ```shell
+  ./download_db.sh -d </home/johndoe/alphafold_data> -m reduced_dbs
+  ```
+- Option 2: Follow https://github.com/deepmind/alphafold#genetic-databases
+
+#### Setup Conda Environment
 
 Create a conda environment and install some necessary packages
 
@@ -25,7 +59,7 @@ conda install -y -q -c conda-forge -c bioconda kalign=2.04 hhsuite=3.3.0
 pip install -q ml-collections==0.1.0 PyYAML==5.4.1 biopython==1.79
 ```
 
-### Access AWS
+#### Access AWS
 
 This is only needed if you plan to use the retrained OpenFold parameters. This model also works with the original AlphaFold parameters, so this step is optional.
 
@@ -35,9 +69,9 @@ unzip -qq awscliv2.zip
 ./install -i ./ -b ./
 rm awscliv2.zip
 ```
-The executable `aws` file is located in `./v2/2.7.20/bin/`.
+The executable `aws` file is now located in `./v2/2.7.20/bin/`.
 
-### Install OpenFold
+#### Install OpenFold
 
 ```shell
 git clone https://github.com/aqlaboratory/openfold
@@ -51,9 +85,9 @@ wget https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c
 cd ../../..
 ```
 
-### Download the weights
+#### Download the weights
 
-#### AlphaFold parameters
+##### AlphaFold parameters
 ```shell
 mkdir -p params/af_params
 cd params/af_params
@@ -62,7 +96,7 @@ tar --extract --verbose --file alphafold_params_2022-01-19.tar --preserve-permis
 cd ../..
 ```
 
-#### OpenFold Weights
+##### OpenFold Weights
 
 To be able to execute the following lines of code, you need to follow the AWS steps above.
 
