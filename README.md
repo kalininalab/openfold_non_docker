@@ -55,7 +55,7 @@ Create a conda environment and install some necessary packages
 ```shell
 conda create --name openfold python=3.7
 conda activate openfold
-conda install -y -q -c conda-forge -c bioconda kalign=2.04 hhsuite=3.3.0
+conda install -y -q -c conda-forge -c bioconda kalign2=2.04 hhsuite=3.3.0
 pip install -q ml-collections==0.1.0 PyYAML==5.4.1 biopython==1.79
 ```
 
@@ -66,7 +66,7 @@ This is only needed if you plan to use the retrained OpenFold parameters. This m
 ```shell
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o awscliv2.zip
 unzip -qq awscliv2.zip
-./install -i ./ -b ./
+./aws/install -i ./aws/ -b ./aws/
 rm awscliv2.zip
 ```
 The executable `aws` file is now located in `./v2/2.7.20/bin/`.
@@ -78,8 +78,7 @@ git clone https://github.com/aqlaboratory/openfold
 cd openfold
 conda env create --file environment.yml
 conda activate openfold_venv
-pip install ./
-conda install -c conda-forge openmm=7.5.1 pdbfixer=1.7
+pip install .
 cd openfold/resources
 wget https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
 cd ../../..
@@ -101,7 +100,8 @@ cd ../..
 To be able to execute the following lines of code, you need to follow the AWS steps above.
 
 ```shell
-...
+mkdir -p params/of_params
+path/to/aws s3 cp --no-sign-request --region us-east-1 s3://openfold/openfold-params ./params/of_params/ --recursive
 ```
 
 ## Inference
@@ -140,7 +140,7 @@ python openfold/run_pretrained_openfold.py \
   --mgnify_database_path data/mgnify/mgy_clusters_2018_12.fa \
   --pdb70_database_path data/pdb70/pdb70 \
   --uniclust30_database_path data/uniclust30/uniclust30_2018_08/uniclust30_2018_08 \
-  --bfd_database_path data/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt_ \
+  --bfd_database_path data/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt \
   --jackhmmer_binary_path ~/anaconda3/envs/openfold_venv/bin/jackhmmer \
   --hhblits_binary_path ~/anaconda3/envs/openfold_venv/bin/hhblits \
   --hhsearch_binary_path ~/anaconda3/envs/openfold_venv/bin/hhsearch \
