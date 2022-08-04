@@ -44,12 +44,18 @@ To download all the databases needed for this is crucial for execution of openfo
 
 ### Installation - Fast way
 
-Clone this repository and execute the installation script.
+Clone this repository and execute `install.sh` and `run.sh` to get the predictions.
 
 ```shell
 git clone git@github.com:kalininalab/openfold_non_docker.git openfold
 cd openfold
-./install.sh
+./install.sh -a -o -p <where/to/store/the/weights>
+
+# run with alphafold weights
+./run.sh -d <path/to/databases> -f <path/to/fastas> -c <path/to/conda> -s <path/to/save> -a <path/to/af_weights>
+
+# run with openfold weights
+./run.sh -d <path/to/databases> -f <path/to/fastas> -c <path/to/conda> -s <path/to/save> -o <model_name> <path/to/af_weights>
 ```
 
 ### Installation - Slow way
