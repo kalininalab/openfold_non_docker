@@ -6,17 +6,19 @@ usage() {
 	echo ""
 	echo "Please make sure all required parameters are given as described."
 	echo "Required Parameters:"
-	echo "-d <data_dir>        Directory of the database in the AlphaFold layout"
-	echo "-f <fasta_dir>       Directory of the FASTA files, one sequence per file"
-	echo "-c <conda_dir>       Directory of the anaconda installation"
-	echo "-s <output_dir>      Directory where to store the folds of the proteins"
+	echo "-d <data_dir>         Directory of the database in the AlphaFold layout"
+	echo "-f <fasta_dir>        Directory of the FASTA files, one sequence per file"
+	echo "-c <conda_dir>        Directory of the anaconda installation"
+	echo "-s <output_dir>       Directory where to store the folds of the proteins"
 	echo ""
 	echo "Semi-required Parameters (either -a or -o have to be given):"
-	echo "-a <af_weight_dir>   Directory of the weights from AlphaFold"
-	echo "-o <of_weight_dir>   Directory of the weights from OpenFold"
+	echo "-a <af_weight_file>   File with the weights for the AlphaFold model"
+	echo "-o <model_name> <of_weight_dir>"
+	echo "                      Name of the model to use (--config_preset)"
+	echo "                      File with the weights for the OpenFold model"
 	echo ""
 	echo "Optional Parameters:"
-	echo "-g|--gpu             Flag indicating to use GPU instead of default CPU"
+	echo "--cpu                 Flag indicating to use CPU instead of default GPU"
 	echo ""
 	exit 1
 }
@@ -27,7 +29,7 @@ data_dir=""
 conda_dir=""
 fasta_dir=""
 save_dir=""
-gpu=0
+cpu=0
 
 while [[ $# -gt 0 ]]; do 
 	case $1 in
@@ -59,12 +61,14 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-o)
 			open=1
-			open_model=$2
+			open_name=$2
+			open_model=$3
+			shift
 			shift
 			shift
 			;;
-		-g|--gpu)
-			gpu=1
+		--cpu)
+			cpu=1
 			shift
 			;;
 		*)
@@ -73,6 +77,9 @@ while [[ $# -gt 0 ]]; do
 			;;
 	esac
 done
+
+echo $open_name
+echo $open_model
 
 if [[ $data_dir = "" ]]; then
 	usage
@@ -113,29 +120,23 @@ kalign_binary_path="$conda_dir/envs/openfold_venv/bin/kalign"
 database_args="--uniref90_database_path $uniref90_database_path --mgnify_database_path $mgnify_database_path --pdb70_database_path $pdb70_database_path --uniclust30_database_path $uniclust30_database_path --bfd_database_path $bfd_database_path"
 tool_args="--jackhmmer_binary_path $jackhmmer_binary_path --hhblits_binary_path $hhblits_binary_path --hhsearch_binary_path $hhsearch_binary_path --kalign_binary_path $kalign_binary_path"
 
-if [ $alpha ]; then
+if [ $alpha -eq 1 ]; then
 	model_args="--jax_param_path $alpha_model"
 else
-	config=""
-	model_args="--config_preset \"$config\" --openfold_checkpoint_path $open_model"
+	model_args="--config_preset $open_name --openfold_checkpoint_path $open_model"
 fi
 
-if [ $gpu ]; then
-	cuda="cuda:0"
-	arch_args="--model_device $cuda"
-else
+if [ $cpu -eq 1 ]; then
 	cpu="cpu"
 	arch_args="--model_device $cpu"
+else
+	cuda="cuda:0"
+	arch_args="--model_device $cuda"
 fi
 
 output_arg="--output_dir $save_dir"
 
-# echo $fasta_dir
-# echo $template_mmcif_dir
-# echo $output_arg
-# echo $database_args
-# echo $tool_args
-# echo $model_args
 cmd="python openfold/run_pretrained_openfold.py $fasta_dir $template_mmcif_dir $output_arg $arch_args $database_args $tool_args $model_args"
-echo $cmd
+# echo $cmd
 $cmd
+

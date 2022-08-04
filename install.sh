@@ -61,7 +61,7 @@ check_cmd_line_utility "tar"
 check_cmd_line_utility "curl"
 
 # install aws utils in case openfold should be used
-if [ $of_w ]; then
+if [ $of_w -eq 1 ]; then
 	# Install AWS - Checked
 	curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 	unzip -qq awscliv2.zip
@@ -76,7 +76,7 @@ conda env create --file environment.yml
 $HOME/anaconda3/envs/openfold_venv/bin/pip install .
 wget -P "openfold/resources" "https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt"
 
-if [ $af_w ]; then
+if [ $af_w -eq 1 ]; then
 	if [[ $params_dir = "" ]] ; then
 		af_dir="params/af_params"
 	else
@@ -88,7 +88,7 @@ if [ $af_w ]; then
 	rm "$af_dir/alphafold_params_2022-01-19.tar"
 fi
 
-if [ $of_w ]; then
+if [ $of_w -eq 1 ]; then
 	if [[ $params_dir = "" ]] ; then
 		of_dir="params/of_params"
 	else
